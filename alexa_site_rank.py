@@ -39,7 +39,7 @@ def get_alexa_rank(url):
     browser.open('https://www.alexa.com/siteinfo/'+url)
 
     rankmini = browser.find_all("div", {"class": "rankmini-rank"})
-    print(rankmini)
+    # print(rankmini)
     try:
         rankmini_txt = rankmini[0]
     except:

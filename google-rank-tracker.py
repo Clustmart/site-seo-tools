@@ -98,10 +98,10 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
 
     useragent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36'
     url = 'https://www.google.com/search'
-    cookies = chrome_cookies(url, cookie_file='~/snap/chromium/common/chromium/Default/Cookies')
+    # cookies = chrome_cookies(url, cookie_file='~/snap/chromium/common/chromium/Default/Cookies')
+    # browser = RoboBrowser(history=False, user_agent=useragent, parser=parser)
     browser = RoboBrowser(history=False, user_agent=useragent, parser=parser)
-    browser = RoboBrowser(history=False, user_agent=useragent, parser=parser)
-    browser.session.cookies.update(cookies)
+    # browser.session.cookies.update(cookies)
     browser.open(url + '?num=100&q=' + keyword)
 
     # check if the page include a form
@@ -202,7 +202,6 @@ def main():
     # activate logging
     logging.basicConfig(filename='rank_db.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S ')
 
-    database = "rank.db"
     # Terminal arguments to pass when running the script
     # if no arguments, display syntay
     argn = len(sys.argv)
@@ -234,8 +233,11 @@ def main():
 
     now = datetime.date.today().strftime("%d-%m-%Y")
 
-    re = cursor.execute("SELECT keyword, last_visited FROM keywords ORDER by monthly_searches DESC")
+    re = cursor.execute("select count(*) from keywords where last_visited = '' or last_visited is NULL")
+    result = re.fetchone()
+    remaining = result[0]
 
+    re = cursor.execute("SELECT keyword, last_visited FROM keywords ORDER by monthly_searches DESC")
     item = 0
 
     keywords = re.fetchall()
@@ -246,7 +248,9 @@ def main():
         if kw == None:
             kw = "xxxxxxx"
         if kw[-7:] != now[-7:]:
-            print(str(item) + " / " + keyword[0])
+            print("↓"+str(remaining) + " -- " + str(item) + " / " + keyword[0])
+            logging.info("↓"+str(remaining) + " -- " + str(item) + " / " + keyword[0])
+            remaining = remaining - 1
 
 #            if empty3url(cursor, keyword[0]):
             if device == 'mobile':
@@ -264,7 +268,7 @@ def main():
             except Exception as err:
                 print('DB update failed %s\nError: %s' % (update, str(err)))
             # wait a little
-            t = randint(140, 240)
+            t = randint(98, 175)
             print('Sleeping time is', t, 'Seconds')
             time.sleep(t)
             # input("Press Enter to continue...")
