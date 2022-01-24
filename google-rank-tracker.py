@@ -12,9 +12,14 @@ import logging
 import urllib.request
 from pycookiecheat import chrome_cookies
 import requests
+import smtplib
+import configparser
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 # Customize path to your SQLite database
 database = "rank.db"
+
 
 # Mobile user agent strings found on https://deviceatlas.com/blog/mobile-browser-user-agent-strings
 mobile_agent = [
@@ -65,13 +70,13 @@ def mobile(cursor, now, keyword, sitename, device, useragent):
 
     counter = 0
 
-    print('The user Agent you used was ----> ' + useragent)
+    #print('The user Agent you used was ----> ' + useragent)
 
     # here is where we count and find our url
     d = []
     for i in links:
         counter = counter + 1
-        print(i)
+        #print(i)
         if i == 1:
             print(str(i))
         if sitename in str(i):
@@ -143,7 +148,7 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
             rank = "%s" % (url[0]['href'])
             update = "UPDATE keywords SET '1url'='"+rank+"' WHERE keyword='"+ keyword+"'"
             execute(cursor, update)
-            print("1URL"+rank)
+            # print("1URL"+rank)
         if counter == 2:
             logging.debug("i: "+ str(i))
             url = i.find_all('a', href=True)
@@ -151,7 +156,7 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
             rank = "%s" % (url[0]['href'])
             update = "UPDATE keywords SET '2url'='"+rank+"' WHERE keyword='"+ keyword+"'"
             execute(cursor, update)
-            print("2URL"+rank)
+            # print("2URL"+rank)
         if counter == 3:
             logging.debug("i: "+ str(i))
             url = i.find_all('a', href=True)
@@ -159,7 +164,7 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
             rank = "%s" % (url[0]['href'])
             update = "UPDATE keywords SET '3url'='"+rank+"' WHERE keyword='"+ keyword+"'"
             execute(cursor, update)
-            print("3URL"+rank)
+            # print("3URL"+rank)
         # find the position in the google search for you url
         if sitename in str(i):
             url = i.find_all('a', href=True)
@@ -173,7 +178,7 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
             d.append(rank)
             d.append(device)
             d.append(now)
-            print("KEY:" + keyword, "POS:" + position, "RANK:" + rank, device, now)
+            # print("KEY:" + keyword, "POS:" + position, "RANK:" + rank, device, now)
             insert = "INSERT INTO rankings (url, keyword, date, rank, device) values ('" + rank + "', '" + keyword + "', '" + now[-7:] + "', " + position + ", '" + device + "')"
             execute(cursor, insert)
             #cursor.execute(insert)
@@ -202,10 +207,22 @@ def main():
     # activate logging
     logging.basicConfig(filename='rank_db.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S ')
 
+    # Read initialization parameters
+    config = configparser.ConfigParser()
+    try:
+        config.read("site-seo-tools.ini")
+    except Exception as err:
+        print('Cannot read INI file due to Error: %s' % (str(err)))
+
+    s = smtplib.SMTP_SSL(host=config['Email']['Host'], port=config['Email']['Port'])
+    #s.starttls()
+    s.ehlo()
+    s.login(config['Email']['Email'], config['Email']['Password'])
+
     # Terminal arguments to pass when running the script
     # if no arguments, display syntay
     argn = len(sys.argv)
-    print(argn)
+    # print(argn)
     if argn < 2:
         print("Program call: python https://website.com [device]")
         print("device may be: desktop / mobile")
@@ -240,6 +257,22 @@ def main():
     re = cursor.execute("SELECT keyword, last_visited FROM keywords ORDER by monthly_searches DESC")
     item = 0
 
+    # send an email at program start
+    msg = MIMEMultipart()       # create a message
+
+    # setup the parameters of the message
+    msg['From']=config['Email']['Email']
+    msg['To']=config['Email']['Email_To']
+    msg['Subject']="STARTED google-rank-tracker.py | ↓" + str(remaining) + " | " +str(now) 
+
+    # add in the message body
+    msg.attach(MIMEText("OK", 'plain'))
+
+    # send the message via the server set up earlier.
+    s.send_message(msg)
+
+    # del msg
+
     keywords = re.fetchall()
     for keyword in keywords:
         item = item + 1
@@ -248,7 +281,7 @@ def main():
         if kw == None:
             kw = "xxxxxxx"
         if kw[-7:] != now[-7:]:
-            print("↓"+str(remaining) + " -- " + str(item) + " / " + keyword[0])
+            # print("↓"+str(remaining) + " -- " + str(item) + " / " + keyword[0])
             logging.info("↓"+str(remaining) + " -- " + str(item) + " / " + keyword[0])
             remaining = remaining - 1
 
@@ -269,14 +302,14 @@ def main():
                 print('DB update failed %s\nError: %s' % (update, str(err)))
             # wait a little
             t = randint(98, 175)
-            print('Sleeping time is', t, 'Seconds')
+            # print('Sleeping time is', t, 'Seconds')
             time.sleep(t)
             # input("Press Enter to continue...")
  #           else:
  #               print("not empty")
 
-        else:
-            print(keyword[0]+ " - already visited today")
+ #       else:
+ #           print(keyword[0]+ " - already visited today")
 
 
     cursor.close()
