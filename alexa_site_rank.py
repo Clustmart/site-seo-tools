@@ -28,7 +28,7 @@ def unknown_competition(curs, url):
     logging.debug(unknown)
     return unknown
 
-def get_alexa_rank(url):
+def get_alexa_rank(url, keywords, metrics):
     rank_alexa = 0
 
     useragent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15"
@@ -51,7 +51,24 @@ def get_alexa_rank(url):
         
         s = rankmini_txt.split()
         rank_alexa = s[2]
-    
+
+        kw = browser.find_all("div", {"class": "keyword"})
+        mtr = browser.find_all("div", {"class": "metric_one"})
+        cleanstr = re.compile('<.*?>')
+
+        index = 0
+        for record in kw:
+            if index > 0 and index < 6:
+                keyword = re.sub(cleanstr, '', str(kw[index]))
+                keyword = keyword.strip()
+
+                metric = re.sub(cleanstr, '', str(mtr[index]))
+                metric = metric.strip()
+                keywords[index] = keyword
+                metrics[index] = metric
+            index = index +1
+
+
         logging.debug("Alexa:"+rank_alexa)
         rank_alexa = rank_alexa.replace(',', '')
         logging.debug("Alexa:"+rank_alexa)
@@ -68,9 +85,13 @@ def insert_competition(url, curs, now):
         logging.debug("Domain:"+domain)
 
         if unknown_competition(curs, domain):
-            alexa = get_alexa_rank(domain)
-            insert = "INSERT INTO competition (url, alexa, date) VALUES ('"+domain+"', '"+ str(alexa) +"', '" + now[-7:] + "')"
-            logging.debug(insert)
+            keywords = ["", "", "", "", "", ""]
+            metrics = [0, 0, 0, 0, 0, 0]
+            alexa = get_alexa_rank(domain, keywords, metrics)
+            insert = "'" + domain + "', '" + str(alexa) + "', '" + now[-7:] + "', '" + keywords[1] + "', '" + str(metrics[1]) + "', '" + keywords[2] + "', '" + str(metrics[2]) + "', '" + keywords[3] + "', '" + str(metrics[3]) + "', '" + keywords[4] + "', '" + str(metrics[4]) + "', '" + keywords[5] + "', '" + str(metrics[5]) + "'"
+            logging.debug("I1:" + insert)
+            insert = "INSERT INTO competition (url, alexa, date, k1, p1, k2, p2, k3, p3, k4, p4, k5, p5) VALUES (" + insert + ")"            
+            logging.debug("I2:" + insert)
             try:
                 curs.execute(insert)
                 curs.execute("COMMIT")
