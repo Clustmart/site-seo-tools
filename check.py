@@ -1,4 +1,6 @@
 import sqlite3
+import datetime
+import time
 
 database = "rank.db"
 
@@ -9,6 +11,9 @@ try:
 except Exception as err:
     print('Connecting to DB failed due to: %s\nError: %s' % (str(err)))
 
-re = cursor.execute("select count(*) from keywords where last_visited = '' or last_visited is NULL")
+now = datetime.date.today().strftime("%d-%m-%Y")
+
+# re = cursor.execute("select count(*) from keywords where last_visited = '' or last_visited is NULL")
+re = cursor.execute("select count(*) from keywords where last_visited = '' or last_visited is NULL or last_visited <> '" + str(now[-7:]) +"'")
 result = re.fetchone()
 print(str(result[0]))
