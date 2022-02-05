@@ -205,7 +205,7 @@ def empty3url(c, keyword):
 
 def main():
     # activate logging
-    logging.basicConfig(filename='rank_db.log', level=logging.DEBUG, format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S ')
+    logging.basicConfig(filename='rank_db.log', level=logging.ERROR, format='%(asctime)s %(message)s', datefmt='%Y-%m-%d %H:%M:%S ')
 
     # Read initialization parameters
     config = configparser.ConfigParser()
@@ -313,6 +313,10 @@ def main():
 
 
     cursor.close()
+    msg['Subject']="ENDED google-rank-tracker.py | ✓" + str(now) 
+    # add in the message body
+    msg.attach(MIMEText("OK", 'plain'))
+    s.send_message(msg)
 
 if __name__ == '__main__':
     main()
