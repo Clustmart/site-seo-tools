@@ -11,7 +11,10 @@ import sqlite3
 import logging
 import urllib.request
 from urllib.parse import urlparse
-
+import smtplib
+import configparser
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 parser = 'html.parser'
 
@@ -73,7 +76,7 @@ def get_alexa_rank(url, keywords, metrics):
         rank_alexa = rank_alexa.replace(',', '')
         logging.debug("Alexa:"+rank_alexa)
         t = randint(30,80)
-        print('Sleeping time is' ,t ,'Seconds')
+        # print('Sleeping time is' ,t ,'Seconds')
         time.sleep(t)
     return rank_alexa
 
@@ -117,6 +120,16 @@ def main():
     except Exception as err:
         print('Connecting to DB failed due to: %s\nError: %s' % (str(err)))
 
+    # Read initialization parameters
+    config = configparser.ConfigParser()
+    try:
+        config.read("site-seo-tools.ini")
+    except Exception as err:
+        print('Cannot read INI file due to Error: %s' % (str(err)))
+    s = smtplib.SMTP_SSL(host=config['Email']['Host'], port=config['Email']['Port'])
+    #s.starttls()
+    s.ehlo()
+    s.login(config['Email']['Email'], config['Email']['Password'])
 
     now = datetime.date.today().strftime("%d-%m-%Y")
 
@@ -131,6 +144,18 @@ def main():
         insert_competition(col[5], cursor, now)
 
     cursor.close()
+    # Send email when run ended
+    # setup the parameters of the message
+    msg = MIMEMultipart()       # create a message
+    msg['From']=config['Email']['Email']
+    msg['To']=config['Email']['Email_To']
+    msg['Subject']="ENDED alexa_site_rank.py | ↓" + str(now) 
+
+    # add in the message body
+    msg.attach(MIMEText("OK", 'plain'))
+
+    # send the message via the server set up earlier.
+    s.send_message(msg)
 
 if __name__ == '__main__':
     main()
