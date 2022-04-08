@@ -71,7 +71,11 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
             logging.debug("i: "+ str(i))
             url = i.find_all('a', href=True)
             position = "%d" % (counter)
-            rank = "%s" % (url[0]['href'])
+            # logging.debug(url[0])
+            try:
+                rank = "%s" % (url[0]['href'])
+            except:
+                rank="-X-"
             update = "UPDATE keywords SET '1url'='"+rank+"' WHERE keyword='"+ keyword+"'"
             execute(cursor, update)
             # print("1URL"+rank)
@@ -223,7 +227,7 @@ def main():
             except Exception as err:
                 print('DB update failed %s\nError: %s' % (update, str(err)))
             # wait a little
-            t = randint(98, 175)
+            t = randint(88, 149)
             # print('Sleeping time is', t, 'Seconds')
             time.sleep(t)
             # input("Press Enter to continue...")
