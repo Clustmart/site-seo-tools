@@ -5,3 +5,27 @@ Email=
 Host=
 Port=
 Email_To=
+
+
+*/31 * * * * cd /home/ubuntu/scripts/apps-monitor && /home/ubuntu/scripts/apps-monitor/env/bin/python online_status.py >> ~/cron.log 2>&1
+
+
+nr. de mandate la rectori - nu e o problema, asa ca sa clasificam univesritatile
+
+
+How to develop a tourist destination
+
+cosmin toma, 
+
+
+golden kitty winner
+
+
+Q:
+- what does not work in another browser?
+
+
+
+1. Flex view & map -
+2. Bekommen die Region (Destination pro - ) 
+3. 
