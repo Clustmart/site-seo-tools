@@ -46,7 +46,7 @@ def recheck(cursor, now, keyword, sitename, device, useragent):
     logging.debug(str(links))
     logging.debug("===")
 
-    check = "SELECT rank FROM rankings WHERE keyword = '"+ keyword+"' AND date = '" + str(now[-7:]) +"'"
+    check = "SELECT rank FROM rankings WHERE keyword = '"+ keyword+"' AND date = '" + str(now[:7]) +"'"
     recheck = cursor.execute(check)
     result = recheck.fetchone()
     if (result is None):
@@ -90,7 +90,7 @@ def recheck(cursor, now, keyword, sitename, device, useragent):
             d.append(device)
             d.append(now)
             # print("KEY:" + keyword, "POS:" + position, "RANK:" + rank, device, now)
-            insert = "INSERT INTO rankings (url, keyword, date, rank, device) values ('" + rank + "', '" + keyword + "', '" + now[-7:] + "', " + position + ", '" + device + "')"
+            insert = "INSERT INTO rankings (url, keyword, date, rank, device) values ('" + rank + "', '" + keyword + "', '" + now[:7] + "', " + position + ", '" + device + "')"
             execute(cursor, insert)
             #cursor.execute(insert)
 
@@ -159,9 +159,9 @@ def main():
         print('Connecting to DB failed due to: %s\nError: %s' % (str(err)))
 
 
-    now = datetime.date.today().strftime("%d-%m-%Y")
+    now = datetime.date.today().strftime("%Y-%m-%d")
 
-    re = cursor.execute("select count(*) from keywords where last_visited = '" + str(now[-7:]) +"'")
+    re = cursor.execute("select count(*) from keywords where last_visited = '" + str(now[:7]) +"'")
     result = re.fetchone()
     remaining = result[0]
 
@@ -191,7 +191,7 @@ def main():
         kw = keyword[1]
         if kw == None:
             kw = "xxxxxxx"
-        if kw[-7:] == now[-7:]:
+        if kw[:7] == now[:7]:
             # print("↓"+str(remaining) + " -- " + str(item) + " / " + keyword[0])
             logging.info("↓"+str(remaining) + " -- " + str(item) + " / " + keyword[0])
             remaining = remaining - 1

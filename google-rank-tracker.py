@@ -10,7 +10,7 @@ import time
 import sqlite3
 import logging
 import urllib.request
-from pycookiecheat import chrome_cookies
+# from pycookiecheat import chrome_cookies
 import requests
 import smtplib
 import configparser
@@ -19,7 +19,6 @@ from email.mime.text import MIMEText
 
 # Customize path to your SQLite database
 database = "rank.db"
-
 
 
 
@@ -100,7 +99,6 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
             url = i.find_all('a', href=True)
             position = "%d" % (counter)
             rank = "%s" % (url[0]['href'])
-            # now = datetime.date.today().strftime("%d-%m-%Y")
             keyword = keyword
             device = device
             d.append(keyword)
@@ -109,7 +107,7 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
             d.append(device)
             d.append(now)
             # print("KEY:" + keyword, "POS:" + position, "RANK:" + rank, device, now)
-            insert = "INSERT INTO rankings (url, keyword, date, rank, device) values ('" + rank + "', '" + keyword + "', '" + now[-7:] + "', " + position + ", '" + device + "')"
+            insert = "INSERT INTO rankings (url, keyword, date, rank, device) values ('" + rank + "', '" + keyword + "', '" + now[:7] + "', " + position + ", '" + device + "')"
             execute(cursor, insert)
             #cursor.execute(insert)
 
@@ -178,9 +176,10 @@ def main():
         print('Connecting to DB failed due to: %s\nError: %s' % (str(err)))
 
 
-    now = datetime.date.today().strftime("%d-%m-%Y")
+    # now = datetime.date.today().strftime("%d-%m-%Y")
+    now = datetime.date.today().strftime("%Y-%m-%d")
 
-    re = cursor.execute("select count(*) from keywords where last_visited = '' or last_visited is NULL or last_visited <> '" + str(now[-7:]) +"'")
+    re = cursor.execute("select count(*) from keywords where last_visited = '' or last_visited is NULL or last_visited <> '" + str(now[:7]) +"'")
     result = re.fetchone()
     remaining = result[0]
 
@@ -210,7 +209,7 @@ def main():
         kw = keyword[1]
         if kw == None:
             kw = "xxxxxxx"
-        if kw[-7:] != now[-7:]:
+        if kw[:7] != now[:7]:
             # print("↓"+str(remaining) + " -- " + str(item) + " / " + keyword[0])
             logging.info("↓"+str(remaining) + " -- " + str(item) + " / " + keyword[0])
             remaining = remaining - 1
@@ -221,7 +220,7 @@ def main():
 
             # remember when keyword was last verified
             try:
-                update = "UPDATE keywords SET last_visited='" + now[-7:] + "' WHERE keyword='" + keyword[0] + "'"
+                update = "UPDATE keywords SET last_visited='" + now[:7] + "' WHERE keyword='" + keyword[0] + "'"
                 #print(update)
                 execute(cursor, update)
             except Exception as err:
