@@ -107,6 +107,5 @@ def main():
                    
     cursor.close()
 
-
 if __name__ == '__main__':
     main()
