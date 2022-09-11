@@ -14,8 +14,7 @@ import pandas as pd
 import sqlite3
 import logging as log
 import configparser
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
+
 
 # global variables
 last_visited=""
