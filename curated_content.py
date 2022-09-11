@@ -68,6 +68,7 @@ def execute(query, param=""):
         print('Query Failed: %s\nError: %s' % (query, str(err)))
     return (return_value)
 
+# get_rank
 # query table rangings for the article_id and return
 #   rank
 #   keyword
