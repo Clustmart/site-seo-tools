@@ -3,7 +3,7 @@
 ## Checks ranking for the curated content and stores it on a
 ## monthly base in a curated_content_history table
 #####################################################################
-## Version: 0.1.0
+## Version: 0.1.1
 ## Email: paul.wasicsek@gmail.com
 ## Status: dev
 #####################################################################
@@ -29,6 +29,7 @@ from email.mime.text import MIMEText
 
 # global variables
 last_visited=""
+article_rank=0
 
 # Read initialization parameters
 config = configparser.ConfigParser()
@@ -67,6 +68,10 @@ def execute(query, param=""):
         print('Query Failed: %s\nError: %s' % (query, str(err)))
     return (return_value)
 
+# query table rangings for the article_id and return
+#   rank
+#   keyword
+#   date
 def get_rank(article):
     query = "SELECT rank, keyword, date from rankings WHERE url LIKE '%" + str(article[0])+ "%'"
     re1=execute(query)
@@ -84,17 +89,19 @@ def main():
 
     for article in articles: 
         re_rank = get_rank(article)
-        last_visited=""    
+        last_visited="" 
+        article_rank=0   
         if (re_rank != 0):
             # pprint(re_rank[0])
             for rank in re_rank:
                 query="INSERT INTO curated_content_history (id_content, rank, link, keyword, date) VALUES (?, ?, ?, ?, ?)"
                 param=(article[0], rank[0], "",rank[1],rank[2])
                 execute(query,param)     
-                if (rank[2] > last_visited):
+                if (rank[2] >= last_visited):
                     last_visited=rank[2]
-            query="UPDATE curated_content SET last_visited=? WHERE id_content=?"
-            param=(last_visited, article[0])
+                    article_rank=rank[0]
+            query="UPDATE curated_content SET last_visited=?, rank=? WHERE id_content=?"
+            param=(last_visited, article_rank, article[0])
             execute(query,param)
                    
     cursor.close()
