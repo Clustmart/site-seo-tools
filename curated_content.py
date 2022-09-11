@@ -3,7 +3,7 @@
 ## Checks ranking for the curated content and stores it on a
 ## monthly base in a curated_content_history table
 #####################################################################
-## Version: 0.1.1
+## Version: 0.1.2
 ## Email: paul.wasicsek@gmail.com
 ## Status: dev
 #####################################################################
