@@ -9,20 +9,10 @@
 #####################################################################
 
 from pprint import pprint
-import sys
-import re
-import random
 from random import randint
-from robobrowser import RoboBrowser
-import datetime
-import csv
 import pandas as pd
-import time
 import sqlite3
 import logging as log
-import urllib.request
-import requests
-import smtplib
 import configparser
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
