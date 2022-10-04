@@ -1,11 +1,13 @@
 #####################################################################
-## Curated Content
-## Checks ranking for the curated content and stores it on a
-## monthly base in a curated_content_history table
+# Curated Content
+# Checks ranking for the curated content and stores it on a
+# monthly base in a curated_content_history table
+#  - stores in curated_content the minimum for rank (the best)
+#  - stores in curated_content_history all occurences for article
 #####################################################################
-## Version: 0.1.3
-## Email: paul.wasicsek@gmail.com
-## Status: dev
+# Version: 0.1.5
+# Email: paul.wasicsek@gmail.com
+# Status: dev
 #####################################################################
 
 from pprint import pprint
@@ -91,19 +93,30 @@ def main():
     for article in articles:
         re_rank = get_rank(article)
         last_visited = ""
-        article_rank = 0
+        article_rank = 1000
+        article_keyword = ""
         if re_rank != 0:
             # pprint(re_rank[0])
             for rank in re_rank:
                 query = "INSERT INTO curated_content_history (id_content, rank, link, keyword, date) VALUES (?, ?, ?, ?, ?)"
                 param = (article[0], rank[0], "", rank[1], rank[2])
                 execute(query, param)
-                if rank[2] >= last_visited:
-                    last_visited = rank[2]
+                # if rank[2] >= last_visited:
+                #     last_visited = rank[2]
+                #     article_rank = rank[0]
+                #     article_keyword = rank[1]
+
+                if rank[0] < article_rank:
                     article_rank = rank[0]
-                query = "UPDATE curated_content SET last_visited=?, rank=? WHERE id_content=?"
-                param = (last_visited, article_rank, article[0])
-                execute(query, param)
+                    last_visited = rank[2]
+                    article_keyword = rank[1]
+                    query = "UPDATE curated_content SET last_visited=?, rank=?, keyword=? WHERE id_content=?"
+                    param = (last_visited, article_rank, article_keyword, article[0])
+                    execute(query, param)
+
+                # query = "UPDATE curated_content SET last_visited=?, rank=?, keyword=? WHERE id_content=?"
+                # param = (last_visited, article_rank, article_keyword, article[0])
+                # execute(query, param)
 
     cursor.close()
 
