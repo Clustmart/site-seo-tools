@@ -28,9 +28,10 @@ import configparser
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-# Customize path to your SQLite database
+# global variables
 database = "rank.db"
-
+sitename = ""
+short_sitename = ""
 
 
 # Creating desktop function with 4 arguments.
@@ -118,7 +119,7 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
             d.append(device)
             d.append(now)
             # print("KEY:" + keyword, "POS:" + position, "RANK:" + rank, device, now)
-            insert = "INSERT INTO rankings (url, keyword, date, rank, device, sitename) values ('" + rank + "', '" + keyword + "', '" + now[:7] + "', " + position + ", '" + device + "', " + sitename + "')"
+            insert = "INSERT INTO rankings (url, keyword, date, rank, device, sitename) values ('" + rank + "', '" + keyword + "', '" + now[:7] + "', " + position + ", '" + device + "', " + short_sitename + "')"
             execute(cursor, insert)
             #cursor.execute(insert)
 
@@ -179,6 +180,10 @@ def main():
     external_ip = urllib.request.urlopen('https://ident.me').read().decode('utf8')
     logging.debug("External IP: " + external_ip)
     logging.info("=======================")
+
+    short_sitename = re.compile(r"https?://(www\.)?")
+    short_sitename = short_sitename.sub('', sitename).strip().strip('/')
+
     # Connect to the database
     try:
         conn = sqlite3.connect(database)
