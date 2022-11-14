@@ -11,10 +11,10 @@
 ## Installation
 
 You want to work with venv, so in the project folder create your venv folder and activate the python environment (so all dependencies you install )
-'''shell
+```shell
 python3 -m venv env
 source env/bin/activate
-'''
+```
 
 Install dependencies: robobrowser, xlrd  and pandas
 
