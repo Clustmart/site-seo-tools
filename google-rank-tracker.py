@@ -218,7 +218,7 @@ def main():
 
     # del msg
 
-    keywords = re.fetchall()
+    keywords = rec.fetchall()
     for keyword in keywords:
         item = item + 1
 
