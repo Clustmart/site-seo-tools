@@ -1,3 +1,14 @@
+#####################################################################
+# Google Rank Tracker
+# For each keyword saved in table 'keywords'
+#   Check the ranking for the first occurence that includes 'sitename' 
+#   And stores it in 'rankings' table
+#####################################################################
+# Version: 0.1.0
+# Email: paul.wasicsek@gmail.com
+# Status: dev
+#####################################################################
+
 import sys
 import re
 import random
@@ -107,7 +118,7 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
             d.append(device)
             d.append(now)
             # print("KEY:" + keyword, "POS:" + position, "RANK:" + rank, device, now)
-            insert = "INSERT INTO rankings (url, keyword, date, rank, device) values ('" + rank + "', '" + keyword + "', '" + now[:7] + "', " + position + ", '" + device + "')"
+            insert = "INSERT INTO rankings (url, keyword, date, rank, device, sitename) values ('" + rank + "', '" + keyword + "', '" + now[:7] + "', " + position + ", '" + device + "', " + sitename + "')"
             execute(cursor, insert)
             #cursor.execute(insert)
 
@@ -154,7 +165,7 @@ def main():
     if argn < 2:
         print("Program call: python https://website.com [device]")
         print("device may be: desktop / mobile")
-        # print("an optional project name can be provided. It will be stored in the rankings table")
+        # print("an optional sitename name can be provided. It will be stored in the rankings table")
         sys.exit(0)
     else:
         sitename = sys.argv[1]
