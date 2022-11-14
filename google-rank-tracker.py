@@ -195,11 +195,11 @@ def main():
     # now = datetime.date.today().strftime("%d-%m-%Y")
     now = datetime.date.today().strftime("%Y-%m-%d")
 
-    re = cursor.execute("select count(*) from keywords where last_visited = '' or last_visited is NULL or last_visited <> '" + str(now[:7]) +"'")
-    result = re.fetchone()
+    rec = cursor.execute("select count(*) from keywords where last_visited = '' or last_visited is NULL or last_visited <> '" + str(now[:7]) +"'")
+    result = rec.fetchone()
     remaining = result[0]
 
-    re = cursor.execute("SELECT keyword, last_visited FROM keywords ORDER by monthly_searches DESC")
+    rec = cursor.execute("SELECT keyword, last_visited FROM keywords ORDER by monthly_searches DESC")
     item = 0
 
     # send an email at program start
