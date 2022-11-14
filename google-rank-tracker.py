@@ -196,7 +196,7 @@ def main():
     now = datetime.date.today().strftime("%Y-%m-%d")
 
     # rec = cursor.execute("select count(*) from keywords where last_visited = '' or last_visited is NULL or last_visited <> '" + str(now[:7]) +"'")
-    rec = cursor.execute("select count(*) from keywords where project= " + short_sitename + " and (last_visited = '' or last_visited is NULL or last_visited <> '" + str(now[:7]) +"') ")
+    rec = cursor.execute("select count(*) from keywords where project= '" + short_sitename + "' and (last_visited = '' or last_visited is NULL or last_visited <> '" + str(now[:7]) +"') ")
     result = rec.fetchone()
     remaining = result[0]
 
