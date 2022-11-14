@@ -119,7 +119,7 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
             d.append(device)
             d.append(now)
             # print("KEY:" + keyword, "POS:" + position, "RANK:" + rank, device, now)
-            insert = "INSERT INTO rankings (url, keyword, date, rank, device, sitename) values ('" + rank + "', '" + keyword + "', '" + now[:7] + "', " + position + ", '" + device + "', " + short_sitename + "')"
+            insert = "INSERT INTO rankings (url, keyword, date, rank, device, project) values ('" + rank + "', '" + keyword + "', '" + now[:7] + "', " + position + ", '" + device + "', " + short_sitename + "')"
             execute(cursor, insert)
             #cursor.execute(insert)
 
@@ -195,7 +195,8 @@ def main():
     # now = datetime.date.today().strftime("%d-%m-%Y")
     now = datetime.date.today().strftime("%Y-%m-%d")
 
-    rec = cursor.execute("select count(*) from keywords where last_visited = '' or last_visited is NULL or last_visited <> '" + str(now[:7]) +"'")
+    # rec = cursor.execute("select count(*) from keywords where last_visited = '' or last_visited is NULL or last_visited <> '" + str(now[:7]) +"'")
+    rec = cursor.execute("select count(*) from keywords where project= " + short_sitename + " and (last_visited = '' or last_visited is NULL or last_visited <> '" + str(now[:7]) +"') ")
     result = rec.fetchone()
     remaining = result[0]
 
