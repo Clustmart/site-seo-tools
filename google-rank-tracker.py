@@ -4,7 +4,7 @@
 #   Check the ranking for the first occurence that includes 'sitename' 
 #   And stores it in 'rankings' table
 #####################################################################
-# Version: 0.1.0
+# Version: 0.1.1
 # Email: paul.wasicsek@gmail.com
 # Status: dev
 #####################################################################
@@ -119,7 +119,7 @@ def desktop(cursor, now, keyword, sitename, device, useragent):
             d.append(device)
             d.append(now)
             # print("KEY:" + keyword, "POS:" + position, "RANK:" + rank, device, now)
-            insert = "INSERT INTO rankings (url, keyword, date, rank, device, project) values ('" + rank + "', '" + keyword + "', '" + now[:7] + "', " + position + ", '" + device + "', " + short_sitename + "')"
+            insert = "INSERT INTO rankings (url, keyword, date, rank, device, project) values ('" + rank + "', '" + keyword + "', '" + now[:7] + "', " + position + ", '" + device + "', '" + short_sitename + "')"
             execute(cursor, insert)
             #cursor.execute(insert)
 
